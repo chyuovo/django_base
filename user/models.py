@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,AbstractUser, BaseUserManager, PermissionsMixin
-
+from django.conf import settings
 class UserManager(BaseUserManager):
     def create_user(self, phone, password=None, **extra_fields):
         if not phone:
@@ -22,7 +22,7 @@ class User(AbstractUser):
     phone = models.CharField("手机号",max_length=15, unique=True)
     real_name = models.CharField("真实姓名",max_length=150, blank=True)
     username = models.CharField("用户名",max_length=150,blank=True)
-    avatar = models.CharField("头像",max_length=150, null=True, blank=True)
+    avatar = models.CharField("头像",max_length=150, null=True, blank=True,default=f"{settings.MEDIA_BASE_URL}media/default/user.png")
     
     objects = UserManager()
 

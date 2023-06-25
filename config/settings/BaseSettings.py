@@ -33,7 +33,7 @@ MIDDLEWARE = [
 # 文件保存设置
 import os
 MEDIA_ROOT = os.path.join('media') 
-MEDIA_BASE_URL = "http://127.0.0.1:8010"
+MEDIA_BASE_URL = "http://127.0.0.1:8000/"
 
 DEBUG = True
 ALLOWED_HOSTS = ["*"]
@@ -41,8 +41,7 @@ ROOT_URLCONF = 'urls'
 
 """语言配置"""
 LANGUAGE_CODE = 'zh-Hans'
-# TIME_ZONE = 'Asia/Shanghai'
 TIME_ZONE = 'Asia/Shanghai'
-USE_TZ = True
+
 # 设置用户模型
 AUTH_USER_MODEL = "user.User"

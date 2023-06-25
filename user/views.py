@@ -60,3 +60,4 @@ class UserView(CommonViewSetModel,UploadFile):
     # 头像
     paper_file = "avatars"
     user_unique_file = True
+    file_type = ["jpeg","GIF","JPG","PNG"]

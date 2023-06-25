@@ -22,3 +22,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/user/',include("user.urls")),
 ]
+
+"""
+测试时：上传的文件托管
+"""
+from django.conf import settings    
+from django.conf.urls.static import static  
+urlpatterns += static('media', document_root=settings.MEDIA_ROOT)

@@ -25,6 +25,8 @@ REST_KNOX = {
     'TOKEN_TTL': timedelta(hours=10),
     # 每次使用令牌后令牌是否延长时间
     'AUTO_REFRESH': True,
+    # 这是更新令牌到期所需的最短时间（以秒为单位） 在数据库中。
+    'MIN_REFRESH_INTERVAL':60,
     # 每个用户的令牌限制
     'TOKEN_LIMIT_PER_USER': None,
     'USER_SERIALIZER': 'knox.serializers.UserSerializer',
