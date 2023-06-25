@@ -10,6 +10,7 @@ from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.generics import  GenericAPIView
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.decorators import action
 
 from knox.models import AuthToken
 from knox.views import LoginView as KnoxLoginView
@@ -48,16 +49,26 @@ class LoginView(KnoxLoginView,GenericAPIView):
 class UserView(CommonViewSetModel,UploadFile):
     
     permission_classes_map = {
+        # 管理员
         "list":[permissions.IsAdminUser],
         "retrieve":[permissions.IsAdminUser],
         "create":[permissions.IsAdminUser],
         "update":[permissions.IsAdminUser],
         "partial_update":[permissions.IsAdminUser],
         "destroy":[permissions.IsAdminUser],
+        # 用户
+        "getMe":[permissions.IsAuthenticated]
     }
     queryset = User.objects.all()
     serializer_class = UserSerializers
+
     # 头像
     paper_file = "avatars"
     user_unique_file = True
     file_type = ["jpeg","GIF","JPG","PNG"]
+
+    @action(methods=['get'],detail=False,url_path="me")
+    def getMe(self,request):
+        return Response(self.get_serializer(request.user).data)
+    
+    
