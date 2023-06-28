@@ -17,7 +17,7 @@
 pipreqs ./ --encoding=utf
 
 # 镜像安装某个包
-pip install Django --index-url=https://mirrors.aliyun.com/pypi/simple/
+pip install Pillow --index-url=https://mirrors.aliyun.com/pypi/simple/
 
 # 依赖管理
 pip freeze > requirements.txt

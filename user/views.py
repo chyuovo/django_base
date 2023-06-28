@@ -1,22 +1,26 @@
-from django.contrib.auth import get_user_model
+from typing import Any
+from django.contrib.auth import get_user_model,password_validation
+
 User = get_user_model()
 
 from django.contrib.auth.signals import user_logged_in
 from django.contrib.auth import login
 from django.utils import timezone
-
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import status,mixins
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.generics import  GenericAPIView
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed,ParseError
 from rest_framework.decorators import action
 
 from knox.models import AuthToken
 from knox.views import LoginView as KnoxLoginView
 
-from utils import CommonViewSetModel,UploadFile
-from .serializers import UserSerializers,LoginSerializer
+from utils.viewsets import CommonViewSetModel,CommonViewSet,UploadFile
+from django.contrib.auth.forms import PasswordChangeForm  
+
+from .serializers import *
 
 class LoginView(KnoxLoginView,GenericAPIView):
     """
@@ -46,22 +50,36 @@ class LoginView(KnoxLoginView,GenericAPIView):
 
 
 
-class UserView(CommonViewSetModel,UploadFile):
-    
-    permission_classes_map = {
-        # 管理员
-        "list":[permissions.IsAdminUser],
-        "retrieve":[permissions.IsAdminUser],
-        "create":[permissions.IsAdminUser],
-        "update":[permissions.IsAdminUser],
-        "partial_update":[permissions.IsAdminUser],
-        "destroy":[permissions.IsAdminUser],
-        # 用户
-        "getMe":[permissions.IsAuthenticated]
-    }
+class AdminUserView(CommonViewSetModel):
     queryset = User.objects.all()
     serializer_class = UserSerializers
+    permission_classes = [permissions.IsAdminUser]
 
+    @action(methods=['put'],detail=True,url_path="reset_password")
+    def reset_password(self,request,pk):
+        """
+        重置密码为账户
+        """
+        user:User = self.get_object()
+        user.set_password(getattr(user,User.USERNAME_FIELD))
+        user.save()
+        return Response()
+
+class UserView(CommonViewSet,UploadFile):
+    """
+    用户
+    """
+    classes_map = {
+        'upload_file':{'permissions':[permissions.IsAuthenticated],'serializer':None},
+        'getMe':{'permissions':[permissions.IsAuthenticated],'serializer':BaseUserSerializers},
+        'set_password':{'permissions':[permissions.IsAuthenticated],'serializer':SetPasswordSerializer},
+        'update_profile':{'permissions':[permissions.IsAuthenticated],'serializer':BaseUserSerializers},
+        'register':{'permissions':[],'serializer':RegisterSerializers},
+    }
+    
+    queryset = User.objects.all()
+    serializer_class = BaseUserSerializers
+    permission_classes = [permissions.IsAuthenticated]
     # 头像
     paper_file = "avatars"
     user_unique_file = True
@@ -70,5 +88,39 @@ class UserView(CommonViewSetModel,UploadFile):
     @action(methods=['get'],detail=False,url_path="me")
     def getMe(self,request):
         return Response(self.get_serializer(request.user).data)
+
     
+    @action(methods=['post'],detail=False,url_path="set_password")
+    def set_password(self,request):
+        """设置密码"""
+        
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            password_validation.validate_password(request.data["new_password1"],request.user)
+        except DjangoValidationError as e:
+            raise ParseError(list(e)[0])
+        
+        request.user.set_password(request.data["new_password1"])
+        request.user.save()
+        
+        return Response()  
+
     
+    @action(methods=['put'],detail=False,url_path="update_profile")
+    def update_profile(self,request, *args, **kwargs):
+        """修改个人信息"""
+        instance = request.user
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+        
+    @action(methods=['post'],detail=False,url_path="register")
+    def register(self,request, *args, **kwargs):
+        """用户注册"""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

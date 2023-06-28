@@ -3,7 +3,8 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 from . import views
 
-router.register("user",views.UserView,"user")
+router.register("user",views.UserView,"me")
+router.register("admin/user",views.AdminUserView,"user")
 
 from knox import views as knox_views
 from .views import LoginView

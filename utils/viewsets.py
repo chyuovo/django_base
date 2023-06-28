@@ -14,33 +14,32 @@ class CommonViewSet(GenericViewSet):
     该视图类灵活配置权限映射
     重新定义方法的返回值
     '''
-    permission_classes_map = {
-        # "list":[IsAdminUser],
-        # "retrieve":[IsAdminUser],
-        # "create":[IsAdminUser],
-        # "update":[IsAdminUser],
-        # "partial_update":[IsAdminUser],
-        # "destroy":[IsAdminUser],
+
+    classes_map = {
+        # 'list':{'permissions':[],'serializer':None},
+        # 'retrieve':{'permissions':[],'serializer':None},
+        # 'create':{'permissions':[],'serializer':None},
+        # 'update':{'permissions':[],'serializer':None},
+        # 'partial_update':{'permissions':[],'serializer':None},
+        # 'destroy':{'permissions':[],'serializer':None},
     }
+    
     def initial(self, request, *args, **kwargs):
         """重新定义此方法，添加灵活配置权限映射"""
-        if request.method.lower() in self.http_method_names:
-            handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
-        else:
-            handler = self.http_method_not_allowed
-        
-        if hasattr(handler, '__name__'):
-            handler_name = handler.__name__
-        elif hasattr(handler, '__func__'):
-            handler_name = handler.__func__.__name__
-        else:
-            handler_name = None
-        
-        if handler_name and handler_name in self.permission_classes_map:
-            if isinstance(self.permission_classes_map.get(handler_name), (tuple, list)):
-                self.permission_classes = self.permission_classes_map.get(handler_name)
+        handler_name = self.action
+        if handler_name and handler_name in self.classes_map:
+            if isinstance(self.classes_map.get(handler_name).get('permissions'), (tuple, list)):
+                self.permission_classes = self.classes_map.get(handler_name).get('permissions')
         return super(GenericViewSet, self).initial(request, *args, **kwargs)
 
+    def get_serializer_class(self):
+        """重新定义此方法，实现灵活配置序列化器"""
+        handler_name = self.action
+        if handler_name and handler_name in self.classes_map:
+            if  self.classes_map.get(handler_name).get("serializer") is not None:
+                self.serializer_class = self.classes_map.get(handler_name).get("serializer")
+                
+        return super().get_serializer_class()
 
 class CommonViewSetModel(CommonViewSet,ModelViewSet):
     """
@@ -53,7 +52,7 @@ class CommonViewSetModel(CommonViewSet,ModelViewSet):
     
 
 
-class UploadFile(CommonViewSet):
+class UploadFile():
     """
     通过Hash值+文件大小+文件最后修改时间命名保存文件
     用户唯一文件将所有用户id命名
@@ -84,7 +83,7 @@ class UploadFile(CommonViewSet):
 
 
     @action(methods=['post'],detail=False,url_path="upload")
-    def add_file(self,request):
+    def upload_file(self,request):
         upload_file = request.FILES.get('file')    # 获取文件
         file_data = upload_file.file.read()        #读取文件
 
@@ -100,10 +99,10 @@ class UploadFile(CommonViewSet):
                 raise AuthenticationFailed("身份认证信息未提供。")
             filename = f"{request.user.pk}{os.path.splitext(upload_file.name)[1]}"
             
-        filename = os.path.join(settings.MEDIA_ROOT,self.paper_file,filename)
-        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        filepath = os.path.join(settings.MEDIA_ROOT,self.paper_file,filename)
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
         
-        with open(filename, 'wb') as f:
+        with open(filepath, 'wb') as f:
             f.write(file_data)
-        filename = f"{settings.MEDIA_BASE_URL}{filename}"
+        filename = f"{settings.MEDIA_URL}{self.paper_file}/{filename}"
         return Response({"url":filename.replace('\\', '/')})

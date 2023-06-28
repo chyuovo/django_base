@@ -33,7 +33,7 @@ MIDDLEWARE = [
 # 文件保存设置
 import os
 MEDIA_ROOT = os.path.join('media') 
-MEDIA_BASE_URL = "http://127.0.0.1:8000/"
+MEDIA_URL = "/media/"
 
 DEBUG = True
 ALLOWED_HOSTS = ["*"]

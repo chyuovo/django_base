@@ -4,6 +4,12 @@ DRF 配置
 """
 from datetime import timedelta
 REST_FRAMEWORK = {
+    
+    # 异常处理
+    'EXCEPTION_HANDLER': 'utils.exception_handler.custom_handler',
+    # 修改默认返回JSON的renderer的类
+    'DEFAULT_RENDERER_CLASSES': ('utils.renderer.CustomRenderer',),
+    
     # core api接口文档
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema',
     
@@ -22,7 +28,7 @@ REST_KNOX = {
     # 这是授权标头值前缀
     "AUTH_HEADER_PREFIX":"Bearer",
     # 令牌时间   
-    'TOKEN_TTL': timedelta(hours=10),
+    'TOKEN_TTL': timedelta(days=30),
     # 每次使用令牌后令牌是否延长时间
     'AUTO_REFRESH': True,
     # 这是更新令牌到期所需的最短时间（以秒为单位） 在数据库中。

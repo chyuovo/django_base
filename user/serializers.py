@@ -4,24 +4,39 @@ User = get_user_model()
 from rest_framework import serializers
 
 from django.contrib.auth import authenticate
-from rest_framework.exceptions import ValidationError,AuthenticationFailed
+from rest_framework.exceptions import ValidationError,AuthenticationFailed,ParseError
 from django.contrib.auth.hashers import make_password
 
 class UserSerializers(serializers.ModelSerializer):
     """ 
-    用户序列化器 
+    管理员用户序列化器 
+    默认密码为登入账户
     """
     class Meta:
         model = User
-        fields = "__all__"
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
+        exclude = ('password',)
     
     def create(self, validated_data):
-        validated_data["password"] = make_password(validated_data["password"])
+        validated_data["password"] = make_password(validated_data[User.USERNAME_FIELD])
         user =  super().create(validated_data)
         return user
+
+class BaseUserSerializers(serializers.ModelSerializer):
+    """ 
+    用户序列化器
+    """
+    class Meta:
+        model = User
+        exclude = ['password']
+        read_only_fields=['groups','is_superuser','is_active','is_staff','user_permissions','last_login','date_joined']
+
+class RegisterSerializers(serializers.ModelSerializer):
+    """ 
+    注册序列化器
+    """
+    class Meta:
+        model = User
+        exclude = ['groups','is_superuser','is_active','is_staff','user_permissions','last_login','date_joined']
 
 class LoginSerializer(serializers.Serializer):
     """
@@ -54,3 +69,23 @@ class LoginSerializer(serializers.Serializer):
             return attrs
         
         raise AuthenticationFailed("账户已冻结")
+
+class SetPasswordSerializer(serializers.Serializer):
+    """ 设置密码序列化器 """
+    old_password =  serializers.CharField(required=True, style={"input_type": "password"})
+    new_password1 =  serializers.CharField(required=True, style={"input_type": "password"})
+    new_password2 =  serializers.CharField(required=True, style={"input_type": "password"})
+
+    def validate(self, attrs):
+        request=self.context.get("request")
+        if attrs.get("new_password1") != attrs.get("new_password2"):
+            raise ParseError("两次输入的密码不一致")
+        
+        if not request.user.check_password(attrs.get("old_password")):
+            raise ParseError("旧密码不正确")
+
+        if attrs.get("old_password") == attrs.get("new_password1"):
+            raise ParseError("新密码不能与旧密码相同")
+        
+        return attrs
+
