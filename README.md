@@ -1,10 +1,5 @@
 # DRF
 
-## Token Authentication(令牌认证)
-
-在 Header 添加参数 Authorization，其值为在 Bearer 之后拼接 Token  
-示例：`Authorization: Bearer 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b9836F45E23A345`
-
 ## 框架
 
 1. [Django 中文文档](https://docs.djangoproject.com/zh-hans/4.2/)
@@ -36,3 +31,16 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
+## Token Authentication(令牌认证)
+
+在 Header 添加参数 Authorization，其值为在 Bearer 之后拼接 Token  
+示例：`Authorization: Bearer 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b9836F45E23A345`
+
+## 管理员-用户
+
+默认密码：登入**账户**  
+重置密码：重置为登入**账户**
+
+## 自定义异常状态码
+
+`4000` 数据格式错误,data中描述多个字段的错误，msg中取第一个错误
