@@ -21,6 +21,7 @@ from utils.viewsets import CommonViewSetModel,CommonViewSet,UploadFile
 from django.contrib.auth.forms import PasswordChangeForm  
 
 from .serializers import *
+from .models import Department
 
 class LoginView(KnoxLoginView,GenericAPIView):
     """
@@ -124,3 +125,15 @@ class UserView(CommonViewSet,UploadFile):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class DepartmentView(CommonViewSetModel,UploadFile):
+    queryset = Department.objects.all()
+    serializer_class = DepartmentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    # 部门
+    paper_file = "department"
+    user_unique_file = True
+    file_type = ["jpeg","GIF","JPG","PNG"]
+

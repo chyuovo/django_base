@@ -25,7 +25,7 @@ def custom_handler(err,context: dict):
             for k,v in response.data.items():  
                 msg = v
                 if isinstance(v,list):
-                    msg = k+v[0]
+                    msg = v[0]
 
         elif "detail" in response.data:
             msg = response.data["detail"]

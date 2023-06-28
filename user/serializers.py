@@ -6,7 +6,7 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework.exceptions import ValidationError,AuthenticationFailed,ParseError
 from django.contrib.auth.hashers import make_password
-
+from .models import Department
 class UserSerializers(serializers.ModelSerializer):
     """ 
     管理员用户序列化器 
@@ -28,7 +28,7 @@ class BaseUserSerializers(serializers.ModelSerializer):
     class Meta:
         model = User
         exclude = ['password']
-        read_only_fields=['groups','is_superuser','is_active','is_staff','user_permissions','last_login','date_joined']
+        read_only_fields=['groups','department','is_superuser','is_active','is_staff','user_permissions','last_login','date_joined']
 
 class RegisterSerializers(serializers.ModelSerializer):
     """ 
@@ -88,4 +88,9 @@ class SetPasswordSerializer(serializers.Serializer):
             raise ParseError("新密码不能与旧密码相同")
         
         return attrs
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Department
+        fields = "__all__"
 

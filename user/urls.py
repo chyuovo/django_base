@@ -5,7 +5,7 @@ from . import views
 
 router.register("user",views.UserView,"me")
 router.register("admin/user",views.AdminUserView,"user")
-
+router.register("department",views.DepartmentView,"department")
 from knox import views as knox_views
 from .views import LoginView
 
