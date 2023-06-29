@@ -19,7 +19,7 @@ class UserFilter(filters.FilterSet):
     
     class Meta:
         model = User
-        fields = ("username","department")
+        fields = ("username","department","real_name","department_name",)
 
 class DepartmentFilter(filters.FilterSet):
     name = filters.CharFilter(field_name='name', lookup_expr="icontains")

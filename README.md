@@ -6,6 +6,7 @@
 2. [Django REST framework 中文文档](https://q1mi.github.io/Django-REST-framework-documentation/)
 3. [Django-Rest-Knox](https://james1345.github.io/django-rest-knox/)
 4. [django-filter](https://django-filter.readthedocs.io/en/main/guide/usage.html#the-filter)
+5. [drf_api_logger](https://pypi.org/project/drf-api-logger/)
 
 ## 常用命令
 
@@ -17,7 +18,7 @@ pip install django-filters --index-url=https://mirrors.aliyun.com/pypi/simple/
 
 # 依赖管理
 pip freeze > requirements.txt
-pip install --index-url=https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
+pip install --index-url=https://mirrors.aliyun.com/pypi/simple/ -r requirements-my.txt
 
 # 数据库
 python manage.py makemigrations
@@ -31,6 +32,17 @@ python manage.py createsuperuser
 # 启动
 python manage.py runserver
 ```
+
+## 安装依赖
+
+`pip install --index-url=https://mirrors.aliyun.com/pypi/simple/ -r requirements-my.txt`
+
+## 日志-重写`drf_api_logger`
+
+[drf_api_logger](https://pypi.org/project/drf-api-logger/)
+
+1. 增加用户
+2. 增加获取日志的接口
 
 ## Token Authentication(令牌认证)
 

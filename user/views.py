@@ -1,6 +1,5 @@
 from typing import Any
 from django.contrib.auth import get_user_model,password_validation
-
 User = get_user_model()
 
 from django.contrib.auth.signals import user_logged_in
@@ -97,6 +96,7 @@ class AdminUserView(CommonViewSetModel):
         user.is_superuser = not user.is_superuser
         user.save()
         return Response(self.get_serializer(user).data)
+
 
 
 class UserView(CommonViewSet,UploadFile):

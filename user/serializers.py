@@ -17,9 +17,9 @@ class UserSerializers(serializers.ModelSerializer):
         exclude = ('password',)
     
     def create(self, validated_data):
+        """设置密码为账户名"""
         validated_data["password"] = make_password(validated_data[User.USERNAME_FIELD])
-        user =  super().create(validated_data)
-        return user
+        return super().create(validated_data)
 
 class BaseUserSerializers(serializers.ModelSerializer):
     """ 
@@ -36,7 +36,13 @@ class RegisterSerializers(serializers.ModelSerializer):
     """
     class Meta:
         model = User
+        extra_kwargs = {'password': {'write_only': True}}
         exclude = ['groups','is_superuser','is_active','is_staff','user_permissions','last_login','date_joined']
+        
+    def create(self, validated_data):
+        """加密密码"""
+        validated_data["password"] = make_password(validated_data["password"]) 
+        return super().create(validated_data)
 
 class LoginSerializer(serializers.Serializer):
     """
@@ -50,6 +56,7 @@ class LoginSerializer(serializers.Serializer):
         self.fields[User.USERNAME_FIELD] = serializers.CharField(required=True)
         
     def validate(self, attrs):
+        """验证账户密码"""
         password = attrs.get("password")
         params = {User.USERNAME_FIELD: attrs.get(User.USERNAME_FIELD)}
         self.user = authenticate(
