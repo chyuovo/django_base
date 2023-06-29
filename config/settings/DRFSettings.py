@@ -4,7 +4,10 @@ DRF 配置
 """
 from datetime import timedelta
 REST_FRAMEWORK = {
-    
+    # 分页
+    'DEFAULT_PAGINATION_CLASS':  'utils.page.PageNumberPagination',
+    # 过滤器
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     # 异常处理
     'EXCEPTION_HANDLER': 'utils.exception_handler.custom_handler',
     # 修改默认返回JSON的renderer的类

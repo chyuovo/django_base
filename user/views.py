@@ -18,10 +18,11 @@ from knox.models import AuthToken
 from knox.views import LoginView as KnoxLoginView
 
 from utils.viewsets import CommonViewSetModel,CommonViewSet,UploadFile
-from django.contrib.auth.forms import PasswordChangeForm  
+
 
 from .serializers import *
 from .models import Department
+from .filter import UserFilter,DepartmentFilter
 
 class LoginView(KnoxLoginView,GenericAPIView):
     """
@@ -52,9 +53,16 @@ class LoginView(KnoxLoginView,GenericAPIView):
 
 
 class AdminUserView(CommonViewSetModel):
+    # 修改list及retrieve权限
+    classes_map = {
+        'list':{'permissions':[]},
+        'retrieve':{'permissions':[]},
+    }
+
     queryset = User.objects.all()
     serializer_class = UserSerializers
     permission_classes = [permissions.IsAdminUser]
+    filterset_class  = UserFilter
 
     @action(methods=['put'],detail=True,url_path="reset_password")
     def reset_password(self,request,pk):
@@ -65,6 +73,31 @@ class AdminUserView(CommonViewSetModel):
         user.set_password(getattr(user,User.USERNAME_FIELD))
         user.save()
         return Response()
+
+    @action(methods=['put'],detail=True,url_path="active")
+    def active(self,request,pk):
+        """激活或禁用用户,返回用户信息"""
+        user:User = self.get_object()
+        user.is_active = not user.is_active
+        user.save()
+        return Response(self.get_serializer(user).data)
+    
+    @action(methods=['put'],detail=True,url_path="is_staff")
+    def is_staff(self,request,pk):
+        """设置或取消用户管理员身份"""
+        user:User = self.get_object()
+        user.is_staff = not user.is_staff
+        user.save()
+        return Response(self.get_serializer(user).data)
+    
+    @action(methods=['put'],detail=True,url_path="is_superuser")
+    def is_superuser(self,request,pk):
+        """设置或取消用户超级管理员身份"""
+        user:User = self.get_object()
+        user.is_superuser = not user.is_superuser
+        user.save()
+        return Response(self.get_serializer(user).data)
+
 
 class UserView(CommonViewSet,UploadFile):
     """
@@ -131,8 +164,9 @@ class DepartmentView(CommonViewSetModel,UploadFile):
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    filterset_class  = DepartmentFilter
 
-    # 部门
+    # 部门lOGO保存信息
     paper_file = "department"
     user_unique_file = True
     file_type = ["jpeg","GIF","JPG","PNG"]

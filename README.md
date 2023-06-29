@@ -1,10 +1,11 @@
-# DRF
+# django_base 说明
 
-## 框架
+## 相关依赖
 
 1. [Django 中文文档](https://docs.djangoproject.com/zh-hans/4.2/)
 2. [Django REST framework 中文文档](https://q1mi.github.io/Django-REST-framework-documentation/)
 3. [Django-Rest-Knox](https://james1345.github.io/django-rest-knox/)
+4. [django-filter](https://django-filter.readthedocs.io/en/main/guide/usage.html#the-filter)
 
 ## 常用命令
 
@@ -12,7 +13,7 @@
 pipreqs ./ --encoding=utf
 
 # 镜像安装某个包
-pip install Pillow --index-url=https://mirrors.aliyun.com/pypi/simple/
+pip install django-filters --index-url=https://mirrors.aliyun.com/pypi/simple/
 
 # 依赖管理
 pip freeze > requirements.txt
@@ -44,3 +45,8 @@ python manage.py runserver
 ## 自定义异常状态码
 
 `4000` 数据格式错误,data中描述多个字段的错误，msg中取第一个错误
+
+## 分页参数
+
+`page_index`页数  
+`page_size`数量(默认10，最大100)
