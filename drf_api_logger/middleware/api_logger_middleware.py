@@ -74,10 +74,11 @@ class APILoggerMiddleware:
                 return self.get_response(request)
 
             # Skip for url name
-            print("url_name",url_name)
+            
             if url_name in self.DRF_API_LOGGER_SKIP_URL_NAME:
+                print("url_name：",url_name,"该接口不记录")
                 return self.get_response(request)
-
+            print("url_name：",url_name)
             # Skip entire app using namespace
             if namespace in self.DRF_API_LOGGER_SKIP_NAMESPACE:
                 return self.get_response(request)

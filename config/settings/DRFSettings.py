@@ -33,7 +33,7 @@ DRF_API_LOGGER_SKIP_URL_NAME = ['log-list'] # 跳过的url
 DRF_API_LOGGER_SKIP_NAMESPACE = [] # 跳过的命名空间(应用程序)
 DRF_API_LOGGER_METHODS = [] # 跳过的方法
 DRF_API_LOGGER_STATUS_CODES = [] # 跳过的状态码
-DRF_API_LOGGER_EXCLUDE_KEYS = ['password', 'token', 'access', 'refresh','AUTHORIZATION'] # 在日志中隐藏敏感数据
+DRF_API_LOGGER_EXCLUDE_KEYS = ['password', 'token', 'access', 'refresh','AUTHORIZATION','COOKIE'] # 在日志中隐藏敏感数据
 DRF_LOGGER_QUEUE_MAX_SIZE = 50 # 日志队列最大长度
 DRF_LOGGER_QUEUE_FLUSH_INTERVAL = 10 # 日志队列刷新间隔
 # 日志保存时间
