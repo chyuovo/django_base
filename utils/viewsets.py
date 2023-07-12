@@ -85,10 +85,10 @@ class UploadFile():
     @action(methods=['post'],detail=False,url_path="upload")
     def upload_file(self,request):
         upload_file = request.FILES.get('file')    # 获取文件
+        if upload_file is None:
+            raise ParseError("未上传文件")
         file_data = upload_file.file.read()        #读取文件
-
         self.file_format_validator(upload_file)
-        
         if not self.user_unique_file:
             m = hashlib.md5()   #创建md5对象
             m.update(file_data)  #更新md5对象

@@ -4,7 +4,7 @@ from django.conf import settings
 from threading import Thread
 from django.db.utils import OperationalError
 
-from drf_api_logger.models import APILogsModel
+from logger.models import APILogsModel
 
 
 class InsertLogIntoDatabase(Thread):

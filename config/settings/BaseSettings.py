@@ -12,7 +12,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'django_filters',
-    'drf_api_logger',
+    'logger',
     'knox',
     'user'
 ]
@@ -26,7 +26,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'drf_api_logger.middleware.api_logger_middleware.APILoggerMiddleware',
+    'logger.middleware.api_logger_middleware.APILoggerMiddleware',
 ]
 
 
@@ -48,3 +48,4 @@ USE_TZ =False
 
 # 设置用户模型
 AUTH_USER_MODEL = "user.User"
+

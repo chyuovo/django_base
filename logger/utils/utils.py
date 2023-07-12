@@ -49,12 +49,11 @@ def database_log_enabled():
 
 def mask_sensitive_data(data, mask_api_parameters=False):
     """
-    Hides sensitive keys specified in sensitive_keys settings.
-    Loops recursively over nested dictionaries.
-
-    When the mask_api_parameters parameter is set, the function will 
-    instead iterate over sensitive_keys and remove them from an api 
-    URL string.
+        隐藏在sensitive_keys设置中指定的敏感密钥。
+        在嵌套字典上递归循环。
+        当设置mask_api_parameters参数时，该函数将
+        相反，迭代sensitive_keys并从API中删除它们
+        URL字符串。
     """
 
     if type(data) != dict:

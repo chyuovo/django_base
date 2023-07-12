@@ -5,3 +5,4 @@ if True:
     from .BaseSettings import *
     from .DataBases import *
     from .DRFSettings import *
+    from .LoggerSetting import *

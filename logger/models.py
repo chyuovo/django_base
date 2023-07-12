@@ -1,11 +1,10 @@
 from django.db import models
-
-from drf_api_logger.utils import database_log_enabled
 from django.contrib.auth import get_user_model
+from django.conf import settings
 
 User = get_user_model()
 
-if database_log_enabled():
+if settings.DRF_API_LOGGER_DATABASE:
     """
     Load models only if DRF_API_LOGGER_DATABASE is True
     """

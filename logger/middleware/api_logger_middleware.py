@@ -1,16 +1,17 @@
-import json
-import time
-import re
+import json,re,time
+
 from django.conf import settings
 from django.urls import resolve
 from django.utils import timezone
 
-from drf_api_logger import API_LOGGER_SIGNAL
-from drf_api_logger.start_logger_when_server_starts import LOGGER_THREAD
-from drf_api_logger.utils import get_headers, get_client_ip, mask_sensitive_data
+from logger import API_LOGGER_SIGNAL
+from logger.utils.start_logger_when_server_starts import LOGGER_THREAD
+from logger.utils.utils import get_headers, get_client_ip, mask_sensitive_data
 
 from knox.auth import TokenAuthentication
 from rest_framework import exceptions
+
+
 
 """
 File: api_logger_middleware.py
@@ -22,64 +23,32 @@ Class: APILoggerMiddleware
 class APILoggerMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        # One-time configuration and initialization.
-
-        self.DRF_API_LOGGER_DATABASE = False
-        if hasattr(settings, 'DRF_API_LOGGER_DATABASE'):
-            self.DRF_API_LOGGER_DATABASE = settings.DRF_API_LOGGER_DATABASE
-
-        self.DRF_API_LOGGER_SIGNAL = False
-        if hasattr(settings, 'DRF_API_LOGGER_SIGNAL'):
-            self.DRF_API_LOGGER_SIGNAL = settings.DRF_API_LOGGER_SIGNAL
-
-        self.DRF_API_LOGGER_PATH_TYPE = 'ABSOLUTE'
-        if hasattr(settings, 'DRF_API_LOGGER_PATH_TYPE'):
-            if settings.DRF_API_LOGGER_PATH_TYPE in ['ABSOLUTE', 'RAW_URI', 'FULL_PATH']:
-                self.DRF_API_LOGGER_PATH_TYPE = settings.DRF_API_LOGGER_PATH_TYPE
-
-        self.DRF_API_LOGGER_SKIP_URL_NAME = []
-        if hasattr(settings, 'DRF_API_LOGGER_SKIP_URL_NAME'):
-            if type(settings.DRF_API_LOGGER_SKIP_URL_NAME) is tuple or type(
-                    settings.DRF_API_LOGGER_SKIP_URL_NAME) is list:
-                self.DRF_API_LOGGER_SKIP_URL_NAME = settings.DRF_API_LOGGER_SKIP_URL_NAME
-
-        self.DRF_API_LOGGER_SKIP_NAMESPACE = []
-        if hasattr(settings, 'DRF_API_LOGGER_SKIP_NAMESPACE'):
-            if type(settings.DRF_API_LOGGER_SKIP_NAMESPACE) is tuple or type(
-                    settings.DRF_API_LOGGER_SKIP_NAMESPACE) is list:
-                self.DRF_API_LOGGER_SKIP_NAMESPACE = settings.DRF_API_LOGGER_SKIP_NAMESPACE
-
-        self.DRF_API_LOGGER_METHODS = []
-        if hasattr(settings, 'DRF_API_LOGGER_METHODS'):
-            if type(settings.DRF_API_LOGGER_METHODS) is tuple or type(
-                    settings.DRF_API_LOGGER_METHODS) is list:
-                self.DRF_API_LOGGER_METHODS = settings.DRF_API_LOGGER_METHODS
-
-        self.DRF_API_LOGGER_STATUS_CODES = []
-        if hasattr(settings, 'DRF_API_LOGGER_STATUS_CODES'):
-            if type(settings.DRF_API_LOGGER_STATUS_CODES) is tuple or type(
-                    settings.DRF_API_LOGGER_STATUS_CODES) is list:
-                self.DRF_API_LOGGER_STATUS_CODES = settings.DRF_API_LOGGER_STATUS_CODES
+        # 一次性配置和初始化。
+        self.DRF_API_LOGGER_DATABASE = settings.DRF_API_LOGGER_DATABASE
+        self.DRF_API_LOGGER_SIGNAL = settings.DRF_API_LOGGER_SIGNAL
+        self.DRF_API_LOGGER_PATH_TYPE = settings.DRF_API_LOGGER_PATH_TYPE
+        self.DRF_API_LOGGER_SKIP_URL_NAME = settings.DRF_API_LOGGER_SKIP_URL_NAME
+        self.DRF_API_LOGGER_SKIP_NAMESPACE = settings.DRF_API_LOGGER_SKIP_NAMESPACE
+        self.DRF_API_LOGGER_METHODS = settings.DRF_API_LOGGER_METHODS
+        self.DRF_API_LOGGER_STATUS_CODES = settings.DRF_API_LOGGER_STATUS_CODES
 
     def __call__(self, request):
-
-        # Run only if logger is enabled.
+        # 只在启用logger时运行
         if self.DRF_API_LOGGER_DATABASE or self.DRF_API_LOGGER_SIGNAL:
-
             url_name = resolve(request.path_info).url_name
             namespace = resolve(request.path_info).namespace
-            
-            # Always skip Admin panel
+
+            # 总是跳过管理面板
             if namespace == 'admin':
                 return self.get_response(request)
 
-            # Skip for url name
-            
+            # 跳过url名称            
             if url_name in self.DRF_API_LOGGER_SKIP_URL_NAME:
                 print("url_name：",url_name,"该接口不记录")
                 return self.get_response(request)
             print("url_name：",url_name)
-            # Skip entire app using namespace
+            
+            # 使用命名空间跳过整个应用
             if namespace in self.DRF_API_LOGGER_SKIP_NAMESPACE:
                 return self.get_response(request)
 
@@ -90,21 +59,20 @@ class APILoggerMiddleware:
             except:
                 pass
 
-            # Code to be executed for each request before
-            # the view (and later middleware) are called.
+            #之前每个请求要执行的代码
+            #调用视图(以及之后的中间件)。
             response = self.get_response(request)
 
             # Only log required status codes if matching
             if self.DRF_API_LOGGER_STATUS_CODES and response.status_code not in self.DRF_API_LOGGER_STATUS_CODES:
                 return response
 
-            # Code to be executed for each request/response after
-            # the view is called.
-
+            # 如果匹配，只记录所需的状态码
+            # 视图被调用。
             headers = get_headers(request=request)
             method = request.method
 
-            # Log only registered methods if available.
+            # 如果可用，只记录已注册的方法。
             if len(self.DRF_API_LOGGER_METHODS) > 0 and method not in self.DRF_API_LOGGER_METHODS:
                 return response
 

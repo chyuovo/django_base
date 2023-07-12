@@ -4,17 +4,17 @@ class EventsException(Exception):
 
 class Events:
     """
-    Encapsulates the core to event subscription and event firing, and feels
-    like a "natural" part of the language.
-    The class Events is there mainly for 3 reasons:
-        - Events (Slots) are added automatically, so there is no need to
-        declare/create them separately. This is great for prototyping. (Note
-        that `__events__` is optional and should primarily help detect
-        misspelled event names.)
-        - To provide (and encapsulate) some level of introspection.
-        - To "steel the name" and hereby remove unneeded redundancy in a call
-        like:
-            xxx.OnChange = event('OnChange')
+    将核心封装为事件订阅和事件触发，并感觉
+    就像语言的“自然”部分。
+    类Events的存在主要有三个原因:
+    —事件(槽位)是自动添加的，不需要添加
+    分别声明/创建它们。这对于原型制作非常有用。(注意
+    ' __events__ '是可选的，应该主要帮助检测
+    事件名称拼写错误。)
+    -提供(和封装)某种程度的自省。
+    -“钢的名字”，并在此删除不必要的冗余呼叫
+    如:
+    xxx。OnChange = event('OnChange')
     """
 
     def __init__(self, events=None):
