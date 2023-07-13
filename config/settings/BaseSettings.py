@@ -8,13 +8,14 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'corsheaders',
-    'rest_framework',
-    'django_filters',
-    'logger',
-    'knox',
-    'user'
+    'django.contrib.staticfiles',  
+    'corsheaders', # 跨域
+    'django_apscheduler',# 定时任务
+    'rest_framework',  # restful框架
+    'django_filters', # 过滤器
+    'logger', # 日志
+    'knox', # 用户认证
+    'user' # 用户模块
 ]
 
 MIDDLEWARE = [

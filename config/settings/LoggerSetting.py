@@ -12,6 +12,7 @@ DRF_API_LOGGER_STATUS_CODES = [] # 跳过的状态码
 DRF_API_LOGGER_EXCLUDE_KEYS = ['password', 'token', 'access', 'refresh','AUTHORIZATION','COOKIE'] # 在日志中隐藏敏感数据
 DRF_LOGGER_QUEUE_MAX_SIZE = 50 # 日志队列最大长度
 DRF_LOGGER_QUEUE_FLUSH_INTERVAL = 10 # 日志队列刷新间隔
+DRF_API_LOGGER_LOGS_EXPIRE_DAYS = 3 # 日志保存天数
 
 # 日志记录器配置
 BASE_DIR = ""
@@ -20,32 +21,27 @@ LOGGING = {
     'disable_existing_loggers': False,
     'handlers': {
         'console': {
-            'class': 'logging.StreamHandler',
+            'class': 'logging.StreamHandler',   
         },
-        'file': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/debug.log'),
-            'maxBytes': 1024*1024*5,  # 5MB
-            'backupCount': 5,
+
+        'general': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': 'logs/general/general.log',
             'encoding': 'utf-8',
-            'formatter': 'verbose',
         },
         'info': {
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/info.log'),
-            'maxBytes': 1024 * 1024,  # 1MB
-            'backupCount': 5,
-            'formatter': 'verbose',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': 'logs/info/info.log',
             'encoding': 'utf-8',
         },
     },
     'loggers': {
-        '': {
-            'handlers': ['file','console'],
-            'level': 'DEBUG',
+        "django.server": {
+            "level": "INFO",
+            "handlers": ["general","console"], 
         },
         '系统日志':{
-            'handlers': ['file','console','info'],
+            'handlers': ['general','console','info'],
             'level': 'INFO',
         }
     },
