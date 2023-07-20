@@ -15,7 +15,7 @@ DRF_LOGGER_QUEUE_FLUSH_INTERVAL = 10 # 日志队列刷新间隔
 DRF_API_LOGGER_LOGS_EXPIRE_DAYS = 3 # 日志保存天数
 
 # 日志记录器配置
-BASE_DIR = ""
+LOGGING_BASE_DIR = "logs"
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -26,12 +26,12 @@ LOGGING = {
 
         'general': {
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': 'logs/general/general.log',
+            'filename': f'{LOGGING_BASE_DIR}/general/general.log',
             'encoding': 'utf-8',
         },
         'info': {
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': 'logs/info/info.log',
+            'filename': f'{LOGGING_BASE_DIR}/info/info.log',
             'encoding': 'utf-8',
         },
     },

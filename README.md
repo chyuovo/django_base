@@ -33,32 +33,45 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-## 安装依赖
+## 日志模块
 
-`pip install --index-url=https://mirrors.aliyun.com/pypi/simple/ -r requirements-my.txt`
+### API 日志
 
-## 日志-重写`drf_api_logger`
+重写`drf_api_logger`
 
-[drf_api_logger](https://pypi.org/project/drf-api-logger/)
+- 修改信息
+  1. 删除了`drf_api_logger`的模板等非必须的功能
+  2. 在模型中添加发起请求的用户 id
+  3. 增加日志保存时间``(默认会自动清理 3 天前的日志)
+  4. 增加获取 API 的接口(拥有**过滤**功能)
 
-1. 增加用户
-2. 增加获取日志的接口
+### 系统日志
 
-## Token Authentication(令牌认证)
+1. 配置 django 的原生日志保存为文件
+2. 增加获取 API 及输出日志(压缩文件)的接口
+3. 增加日志保存时间``(默认会自动清理 3 天前的日志)
+
+## 用户模块
+
+### 部门
+
+1. 为用户添加 1 对 1 的部门信息
+
+### 用户
+
+1. 账户使用手机号
+2. 默认密码：登入**账户**
+3. 重置密码：重置为登入**账户**
+
+## 认证模块
+
+### Token Authentication(令牌认证)
 
 在 Header 添加参数 Authorization，其值为在 Bearer 之后拼接 Token  
 示例：`Authorization: Bearer 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b9836F45E23A345`
 
-## 管理员-用户
+## 特殊响应 code
 
-默认密码：登入**账户**  
-重置密码：重置为登入**账户**
+> 默认响应的 **code** 为**状态码**
 
-## 自定义异常状态码
-
-`4000` 数据格式错误,data中描述多个字段的错误，msg中取第一个错误
-
-## 分页参数
-
-`page_index`页数  
-`page_size`数量(默认10，最大100)
+1. `4000` 数据格式错误,data 中会包含描述多个字段的错误，msg 中只取第一个错误

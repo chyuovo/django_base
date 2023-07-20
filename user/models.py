@@ -6,7 +6,7 @@ from django.conf import settings
 class Department(models.Model):  
     name = models.CharField(max_length=100, unique=True)  
     description = models.TextField(blank=True, null=True)  
-    logo = models.CharField("logo",max_length=150, null=True, blank=True,default="/default/department_logo.png")  
+    logo = models.CharField("logo",max_length=150, null=True, blank=True,default="/{settings.MEDIA_ROOT}/default/department_logo.png")  
   
     class Meta:  
         db_table = 'department'  
@@ -37,7 +37,7 @@ class User(AbstractUser):
     phone = models.CharField("手机号",max_length=15, unique=True,help_text="用户的手机号，登入字段")
     real_name = models.CharField("真实姓名",max_length=150, blank=True,help_text="用户的真实姓名")
     username = models.CharField("用户名",max_length=150,blank=True,help_text="用户的用户名")
-    avatar = models.CharField("头像",max_length=150, null=True, blank=True,default="/default/user.png")
+    avatar = models.CharField("头像",max_length=150, null=True, blank=True,default=f"/{settings.MEDIA_ROOT}/default/avatars.png")
 
     objects = UserManager()
     
