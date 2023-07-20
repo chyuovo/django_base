@@ -4,7 +4,7 @@
 
 .venv
 
-logs
+.log
 plan.md
 
 # Byte-compiled / optimized / DLL files
