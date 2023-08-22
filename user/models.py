@@ -2,19 +2,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,AbstractUser, BaseUserManager, PermissionsMixin
 from django.conf import settings
 
-
-class Department(models.Model):  
-    name = models.CharField(max_length=100, unique=True)  
-    description = models.TextField(blank=True, null=True)  
-    logo = models.CharField("logo",max_length=150, null=True, blank=True,default="/{settings.MEDIA_ROOT}/default/department_logo.png")  
-  
-    class Meta:  
-        db_table = 'department'  
-  
-    def __str__(self):  
-        return self.name
-
-
 class UserManager(BaseUserManager):
     def create_user(self, phone, password=None, **extra_fields):
         if not phone:
@@ -33,7 +20,6 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     first_name = None
     last_name = None
-    department = models.ForeignKey(Department,on_delete=models.CASCADE,null=True, blank=True,help_text="部门编号",verbose_name="部门")
     phone = models.CharField("手机号",max_length=15, unique=True,help_text="用户的手机号，登入字段")
     real_name = models.CharField("真实姓名",max_length=150, blank=True,help_text="用户的真实姓名")
     username = models.CharField("用户名",max_length=150,blank=True,help_text="用户的用户名")
@@ -48,4 +34,6 @@ class User(AbstractUser):
     
     class Meta(AbstractUser.Meta):
         swappable = "AUTH_USER_MODEL"
+        verbose_name = "用户"
+        verbose_name_plural = verbose_name
 

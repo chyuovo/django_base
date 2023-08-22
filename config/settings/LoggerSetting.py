@@ -15,40 +15,40 @@ DRF_LOGGER_QUEUE_FLUSH_INTERVAL = 10 # 日志队列刷新间隔
 DRF_API_LOGGER_LOGS_EXPIRE_DAYS = 3 # 日志保存天数
 
 # 日志记录器配置
-LOGGING_BASE_DIR = "logs"
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',   
-        },
+# LOGGING_BASE_DIR = "logs"
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',   
+#         },
 
-        'general': {
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': f'{LOGGING_BASE_DIR}/general/general.log',
-            'encoding': 'utf-8',
-        },
-        'info': {
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': f'{LOGGING_BASE_DIR}/info/info.log',
-            'encoding': 'utf-8',
-        },
-    },
-    'loggers': {
-        "django.server": {
-            "level": "INFO",
-            "handlers": ["general","console"], 
-        },
-        '系统日志':{
-            'handlers': ['general','console','info'],
-            'level': 'INFO',
-        }
-    },
-    'formatters': {
-        'verbose': {
-            'format': '%(asctime)s %(levelname)s [%(name)s:%(lineno)s] %(message)s',
-            'datefmt': '%Y-%m-%d %H:%M:%S',
-        },
-    },
-}
+#         'general': {
+#             'class': 'logging.handlers.TimedRotatingFileHandler',
+#             'filename': f'{LOGGING_BASE_DIR}/general/general.log',
+#             'encoding': 'utf-8',
+#         },
+#         'info': {
+#             'class': 'logging.handlers.TimedRotatingFileHandler',
+#             'filename': f'{LOGGING_BASE_DIR}/info/info.log',
+#             'encoding': 'utf-8',
+#         },
+#     },
+#     'loggers': {
+#         "django.server": {
+#             "level": "INFO",
+#             "handlers": ["general","console"], 
+#         },
+#         '系统日志':{
+#             'handlers': ['general','console','info'],
+#             'level': 'INFO',
+#         }
+#     },
+#     'formatters': {
+#         'verbose': {
+#             'format': '%(asctime)s %(levelname)s [%(name)s:%(lineno)s] %(message)s',
+#             'datefmt': '%Y-%m-%d %H:%M:%S',
+#         },
+#     },
+# }

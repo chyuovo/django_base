@@ -28,5 +28,5 @@ def logger_job1(name):
     APILogsModel.objects.filter(added_on__lte=expire_time).delete()
     logger.info(f"{name}任务运行成功！,清理了{expire_time.strftime('%Y-%m-%d %H:%M')}前的日志，当前时间为{now.strftime('%Y-%m-%d %H:%M')}")
 
-# scheduler.start()
+scheduler.start()
 # logger_job1("启动时日志清理")

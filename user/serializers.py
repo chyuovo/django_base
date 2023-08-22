@@ -6,7 +6,6 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework.exceptions import ValidationError,AuthenticationFailed,ParseError
 from django.contrib.auth.hashers import make_password
-from .models import Department
 class UserSerializers(serializers.ModelSerializer):
     """ 
     管理员用户序列化器 
@@ -96,8 +95,4 @@ class SetPasswordSerializer(serializers.Serializer):
         
         return attrs
 
-class DepartmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Department
-        fields = "__all__"
 

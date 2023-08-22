@@ -14,16 +14,14 @@ from rest_framework.exceptions import AuthenticationFailed,ParseError
 from rest_framework.decorators import action
 
 from knox.models import AuthToken
-from knox.views import LoginView as KnoxLoginView
-
+from knox import views as knox_views
 from utils.viewsets import CommonViewSetModel,CommonViewSet,UploadFile
 
 
 from .serializers import *
-from .models import Department
-from .filter import UserFilter,DepartmentFilter
+from .filter import UserFilter
 
-class LoginView(KnoxLoginView,GenericAPIView):
+class LoginView(knox_views.LoginView,GenericAPIView):
     """
     登入视图
     """
@@ -49,7 +47,21 @@ class LoginView(KnoxLoginView,GenericAPIView):
         data = self.get_post_response_data(request, token, instance)
         return Response({**data,"user":UserSerializers(user).data})
 
+class LogoutView(knox_views.LogoutView):
+    """
+    重写登出视图，返回200状态码
+    """
+    def post(self, request, format=None):
+        super().post(request,format)
+        return Response(status=status.HTTP_200_OK)
 
+class LogoutAllView(knox_views.LogoutAllView):
+    """
+    重写登出所有视图，返回200状态码
+    """
+    def post(self, request, format=None):
+        super().post(request,format)
+        return Response(status=status.HTTP_200_OK)
 
 class AdminUserView(CommonViewSetModel):
     # 修改list及retrieve权限
@@ -158,16 +170,3 @@ class UserView(CommonViewSet,UploadFile):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-class DepartmentView(CommonViewSetModel,UploadFile):
-    queryset = Department.objects.all()
-    serializer_class = DepartmentSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    filterset_class  = DepartmentFilter
-
-    # 部门lOGO保存信息
-    paper_file = "department"
-    user_unique_file = True
-    file_type = ["jpeg","GIF","JPG","PNG"]
-

@@ -40,12 +40,50 @@ class CommonViewSet(GenericViewSet):
                 self.serializer_class = self.classes_map.get(handler_name).get("serializer")
                 
         return super().get_serializer_class()
+    
+    def response_page(self,queryset,request):
+        """
+        快速分页方法，需要结果集和请求对象
+        """
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True,context={'request': request})
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True,context={'request': request})
+        return Response(serializer.data)
+
+
+
+
 
 class CommonViewSetModel(CommonViewSet,ModelViewSet):
     """
     viewset提供了默认的方法
     """
-    pass
+    @action(methods=['post'],detail=False,url_path="delete")
+    def delete(self,request):
+        """多删，post请求，参数为ids数组"""
+        ids = request.data.get("ids")
+        if ids is None:
+            raise ParseError("未提供ids")
+        self.queryset.filter(pk__in=ids).delete()
+        return Response()
+    
+
+    @action(methods=['post'],detail=False,url_path="save")
+    def save(self,request):
+        """
+            save方法，重写此方法，实现自定义保存逻辑
+            post 请求
+            在请求体中有id则则更新，无id则新增，允许部分更新
+        """
+        instance = None
+        if request.data.get("id"):
+            instance = self.queryset.get(pk=request.data.get("id"))
+        serializer = self.get_serializer(instance,data=request.data,partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
 
@@ -60,6 +98,9 @@ class UploadFile():
 
     # 文件保存的二级目录
     paper_file = "common"
+    # 文件是否以Hash值+文件大小+文件最后修改时间命名
+    # 如果为False则不修改文件名字(重名将被覆盖)
+    hash_file = True
     # 文件是否以登入字段命名（即每个用户唯一）
     user_unique_file = False
     # 允许上传的文件类型
@@ -89,15 +130,31 @@ class UploadFile():
             raise ParseError("未上传文件")
         file_data = upload_file.file.read()        #读取文件
         self.file_format_validator(upload_file)
-        if not self.user_unique_file:
+
+        if self.user_unique_file:
+            "用户唯一文件将所有用户id命名"
+            if not request.user.pk:
+                raise AuthenticationFailed("身份认证信息未提供。")
+            filename = f"{request.user.pk}{os.path.splitext(upload_file.name)[1]}"
+        elif self.hash_file:
+            "通过Hash值+文件大小+文件最后修改时间命名保存文件"
+            
             m = hashlib.md5()   #创建md5对象
             m.update(file_data)  #更新md5对象
             file_hash = m.hexdigest() #哈希值
             filename = f"{file_hash}{upload_file.size}{upload_file.name}"
         else:
-            if not request.user.pk:
-                raise AuthenticationFailed("身份认证信息未提供。")
-            filename = f"{request.user.pk}{os.path.splitext(upload_file.name)[1]}"
+            "文件原名保存"
+            filename = f"{upload_file.name}"
+        # if not self.user_unique_file:
+        #     m = hashlib.md5()   #创建md5对象
+        #     m.update(file_data)  #更新md5对象
+        #     file_hash = m.hexdigest() #哈希值
+        #     filename = f"{file_hash}{upload_file.size}{upload_file.name}"
+        # else:
+        #     if not request.user.pk:
+        #         raise AuthenticationFailed("身份认证信息未提供。")
+        #     filename = f"{request.user.pk}{os.path.splitext(upload_file.name)[1]}"
             
         filepath = os.path.join(settings.MEDIA_ROOT,self.paper_file,filename)
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
