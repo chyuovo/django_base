@@ -1,8 +1,9 @@
 # 默认配置
-if True:
-    from .DefaultSettings import *
-    """  其他配置文件 """
-    from .BaseSettings import *
-    from .DataBases import *
-    from .DRFSettings import *
-    from .LoggerSetting import *
+from .base import *
+
+if os.environ.get('ENV', None):
+    print("===========当前为生产环境===========")
+    from .pro import *
+else:
+    print("===========当前为开发环境===========")
+    from .dev import *

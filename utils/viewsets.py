@@ -53,30 +53,24 @@ class CommonViewSet(GenericViewSet):
         return Response(serializer.data)
 
 
-
-
-
-class CommonViewSetModel(CommonViewSet,ModelViewSet):
-    """
-    viewset提供了默认的方法
-    """
+class DeleteModelMixin:
+    """多删，post请求，参数为ids数组"""
     @action(methods=['post'],detail=False,url_path="delete")
     def delete(self,request):
-        """多删，post请求，参数为ids数组"""
         ids = request.data.get("ids")
         if ids is None:
             raise ParseError("未提供ids")
         self.queryset.filter(pk__in=ids).delete()
         return Response()
-    
 
+class SaveModelMixin:
+    """
+    save方法，实现自定义保存逻辑
+    post 请求
+    在请求体中有id则则更新，无id则新增，允许部分更新
+    """
     @action(methods=['post'],detail=False,url_path="save")
     def save(self,request):
-        """
-            save方法，重写此方法，实现自定义保存逻辑
-            post 请求
-            在请求体中有id则则更新，无id则新增，允许部分更新
-        """
         instance = None
         if request.data.get("id"):
             instance = self.queryset.get(pk=request.data.get("id"))
@@ -84,6 +78,16 @@ class CommonViewSetModel(CommonViewSet,ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+
+class CommonViewSetModel(CommonViewSet,ModelViewSet,DeleteModelMixin,SaveModelMixin):
+    """
+    viewset提供了默认的
+    `create()`, `retrieve()`, 
+    `update()`,`partial_update()`, `destroy()`,
+    `list()`,`delete()`,`save()`操作
+    """
+    pass
 
 
 

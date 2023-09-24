@@ -1,6 +1,16 @@
 # 项目说明
 
-## 文档
+## 配置文件运行
+
+```shell
+# 开发模式
+python manage.py runserver
+# 生成模式
+# window
+cmd /V /C "set ENV=production && python manage.py runserver"
+# Linux
+ENV=production python manage.py runserver
+```
 
 ## 相关依赖
 

@@ -15,7 +15,7 @@ from rest_framework.decorators import action
 
 from knox.models import AuthToken
 from knox import views as knox_views
-from utils.viewsets import CommonViewSetModel,CommonViewSet,UploadFile
+from utils.viewsets import CommonViewSetModel,CommonViewSet,UploadFile,SaveModelMixin
 
 
 from .serializers import *
@@ -63,7 +63,7 @@ class LogoutAllView(knox_views.LogoutAllView):
         super().post(request,format)
         return Response(status=status.HTTP_200_OK)
 
-class AdminUserView(CommonViewSetModel):
+class AdminUserView(CommonViewSet,mixins.ListModelMixin,mixins.RetrieveModelMixin,SaveModelMixin):
     # 修改list及retrieve权限
     classes_map = {
         'list':{'permissions':[]},
@@ -84,12 +84,32 @@ class AdminUserView(CommonViewSetModel):
         user.set_password(getattr(user,User.USERNAME_FIELD))
         user.save()
         return Response()
+    
+    @action(methods=['put'],detail=False,url_path="disable")
+    def disable(self,request):
+        """批量禁用用户"""
+        ids = request.data.get("ids")
+        if ids is None:
+            raise ParseError("未提供ids")
+        self.queryset.filter(pk__in=ids).update(is_active=False)
+        return Response()
+    
+    @action(methods=['put'],detail=False,url_path="enable")
+    def enable(self,request):
+        """批量激活用户"""
+        ids = request.data.get("ids")
+        if ids is None:
+            raise ParseError("未提供ids")
+        self.queryset.filter(pk__in=ids).update(is_active=True)
+        return Response()
 
     @action(methods=['put'],detail=True,url_path="active")
     def active(self,request,pk):
         """激活或禁用用户,返回用户信息"""
         user:User = self.get_object()
-        user.is_active = not user.is_active
+        if request.data.get("is_active") is None:
+            raise ParseError("未提供is_active")
+        user.is_active = request.data.get("is_active")
         user.save()
         return Response(self.get_serializer(user).data)
     
@@ -97,7 +117,9 @@ class AdminUserView(CommonViewSetModel):
     def is_staff(self,request,pk):
         """设置或取消用户管理员身份"""
         user:User = self.get_object()
-        user.is_staff = not user.is_staff
+        if request.data.get("is_staff") is None:
+            raise ParseError("未提供is_staff")
+        user.is_staff = request.data.get("is_staff")
         user.save()
         return Response(self.get_serializer(user).data)
     
@@ -105,7 +127,9 @@ class AdminUserView(CommonViewSetModel):
     def is_superuser(self,request,pk):
         """设置或取消用户超级管理员身份"""
         user:User = self.get_object()
-        user.is_superuser = not user.is_superuser
+        if request.data.get("is_superuser") is None:
+            raise ParseError("未提供is_superuser")
+        user.is_superuser = request.data.get("is_superuser")
         user.save()
         return Response(self.get_serializer(user).data)
 

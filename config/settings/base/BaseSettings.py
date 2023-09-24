@@ -30,16 +30,6 @@ MIDDLEWARE = [
     #'logger.middleware.api_logger_middleware.APILoggerMiddleware',# 日志
 ]
 
-
-
-
-# 文件保存设置
-import os
-MEDIA_ROOT = os.path.join('media') 
-MEDIA_URL = "/media/"
-
-DEBUG = True
-ALLOWED_HOSTS = ["*"]
 ROOT_URLCONF = 'urls'
 
 """语言配置"""

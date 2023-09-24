@@ -6,11 +6,18 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework.exceptions import ValidationError,AuthenticationFailed,ParseError
 from django.contrib.auth.hashers import make_password
-class UserSerializers(serializers.ModelSerializer):
+from utils.model_serializer import CommonSerializer
+from rest_framework.serializers import ListSerializer
+
+
+    
+
+class UserSerializers(CommonSerializer):
     """ 
     管理员用户序列化器 
     默认密码为登入账户
     """
+    
     class Meta:
         model = User
         exclude = ('password',)
@@ -24,6 +31,7 @@ class BaseUserSerializers(serializers.ModelSerializer):
     """ 
     用户序列化器
     """
+    
     class Meta:
         model = User
         exclude = ['password']
