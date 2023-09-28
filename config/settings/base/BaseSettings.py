@@ -3,7 +3,7 @@
 """
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -13,7 +13,7 @@ INSTALLED_APPS = [
     'django_apscheduler',# 定时任务
     'rest_framework',  # restful框架
     'django_filters', # 过滤器
-    # 'logger', # 日志
+    'logger', # 日志
     'knox', # 用户认证
     'user' # 用户模块
 ]
@@ -23,11 +23,11 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'logger.middleware.api_logger_middleware.APILoggerMiddleware',# 日志
+    'logger.middleware.api_logger_middleware.APILoggerMiddleware',# 日志
 ]
 
 ROOT_URLCONF = 'urls'

@@ -31,7 +31,8 @@ class LoginView(knox_views.LoginView,GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
-        login(request, user)
+        request.user = user
+        # login(request, user)
 
         token_limit_per_user = self.get_token_limit_per_user()
         if token_limit_per_user is not None:
@@ -45,7 +46,7 @@ class LoginView(knox_views.LoginView,GenericAPIView):
         user_logged_in.send(sender=request.user.__class__,
                             request=request, user=request.user)
         data = self.get_post_response_data(request, token, instance)
-        return Response({**data,"user":UserSerializers(user).data})
+        return Response({**data,"user":UserSerializers(user,base=True).data})
 
 class LogoutView(knox_views.LogoutView):
     """

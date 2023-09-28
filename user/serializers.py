@@ -17,7 +17,7 @@ class UserSerializers(CommonSerializer):
     管理员用户序列化器 
     默认密码为登入账户
     """
-    
+    base_exclude = []
     class Meta:
         model = User
         exclude = ('password',)
