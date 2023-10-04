@@ -1,6 +1,10 @@
 """
 基础配置
 """
+from utils.system_checks import *
+SILENCED_SYSTEM_CHECKS = [
+    'ststem_checks.E001',
+]
 
 INSTALLED_APPS = [
     # 'django.contrib.admin',
@@ -8,7 +12,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',  
+    'django.contrib.staticfiles',
     'corsheaders', # 跨域
     'django_apscheduler',# 定时任务
     'rest_framework',  # restful框架
