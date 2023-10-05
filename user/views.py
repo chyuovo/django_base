@@ -5,6 +5,7 @@ User = get_user_model()
 from django.contrib.auth.signals import user_logged_in
 from django.contrib.auth import login
 from django.utils import timezone
+from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import status,mixins
 from rest_framework import permissions
@@ -17,9 +18,42 @@ from knox.models import AuthToken
 from knox import views as knox_views
 from utils.viewsets import CommonViewSetModel,CommonViewSet,UploadFile,SaveModelMixin
 
-
 from .serializers import *
 from .filter import UserFilter
+
+
+"""
+登入处理
+self: 继承knox_views后的对象
+request: 请求
+user: 登入的用户
+"""
+def login_user(self,request, user):
+    # 令牌数量验证
+    token_limit_per_user = self.get_token_limit_per_user()
+
+    if token_limit_per_user is not None:
+        now = timezone.now()
+        token = user.auth_token_set.filter(expiry__gt=now).order_by('-expiry')
+        if settings.REST_KNOX["TOKEN_LIMIT_PER_USER_IS_DELETED"]:
+            try:   
+                # 删除多余的令牌
+                print(len(token[token_limit_per_user-1:]))
+                for i in token[token_limit_per_user-1:]:
+                    i.delete()
+            except TypeError:
+                pass
+
+        else:
+            if token.count() >= token_limit_per_user:
+                raise AuthenticationFailed("登入设备超过上限")
+    
+    token_ttl = self.get_token_ttl()
+    instance, token = AuthToken.objects.create(user, token_ttl)
+    user_logged_in.send(sender=user.__class__,
+                        request=request, user=user)
+    data = self.get_post_response_data(request, token, instance)
+    return Response({**data,"user":UserSerializers(user,base=True).data})
 
 class LoginView(knox_views.LoginView,GenericAPIView):
     """
@@ -27,26 +61,18 @@ class LoginView(knox_views.LoginView,GenericAPIView):
     """
     permission_classes = (permissions.AllowAny,)
     serializer_class = LoginSerializer
+
+
     def post(self, request):    
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         request.user = user
         # login(request, user)
+        return login_user(self,request, user)
 
-        token_limit_per_user = self.get_token_limit_per_user()
-        if token_limit_per_user is not None:
-            now = timezone.now()
-            token = request.user.auth_token_set.filter(expiry__gt=now)
-            if token.count() >= token_limit_per_user:
-                raise AuthenticationFailed("登入设备超过上限")
-            
-        token_ttl = self.get_token_ttl()
-        instance, token = AuthToken.objects.create(request.user, token_ttl)
-        user_logged_in.send(sender=request.user.__class__,
-                            request=request, user=request.user)
-        data = self.get_post_response_data(request, token, instance)
-        return Response({**data,"user":UserSerializers(user,base=True).data})
+    
+
 
 class LogoutView(knox_views.LogoutView):
     """
@@ -67,8 +93,8 @@ class LogoutAllView(knox_views.LogoutAllView):
 class AdminUserView(CommonViewSet,mixins.ListModelMixin,mixins.RetrieveModelMixin,SaveModelMixin):
     # 修改list及retrieve权限
     classes_map = {
-        'list':{'permissions':[]},
-        'retrieve':{'permissions':[]},
+        # 'list':{'permissions':[]},
+        # 'retrieve':{'permissions':[]},
     }
 
     queryset = User.objects.all()
@@ -84,6 +110,7 @@ class AdminUserView(CommonViewSet,mixins.ListModelMixin,mixins.RetrieveModelMixi
         user:User = self.get_object()
         user.set_password(getattr(user,User.USERNAME_FIELD))
         user.save()
+        user.auth_token_set.all().delete()
         return Response()
     
     @action(methods=['put'],detail=False,url_path="disable")
@@ -175,7 +202,7 @@ class UserView(CommonViewSet,UploadFile):
         
         request.user.set_password(request.data["new_password1"])
         request.user.save()
-        
+        request.user.auth_token_set.all().delete()
         return Response()  
 
     

@@ -18,8 +18,11 @@ def custom_handler(err,context: dict):
     else:
         msg = response.reason_phrase
         code = response.status_code
+        # 429 请求频繁
+        if code == 429:
+            msg = "请求频繁"
         
-        if isinstance(err,ValidationError):
+        elif isinstance(err,ValidationError):
             code = 4000
             # 取出首个错误
             for k,v in response.data.items():  

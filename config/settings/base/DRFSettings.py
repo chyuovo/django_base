@@ -23,6 +23,16 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'knox.auth.TokenAuthentication',
     ),
+
+    # 限流
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle', # IP
+        'rest_framework.throttling.UserRateThrottle', # 用户
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '30/minute',
+        'user': '60/minute'
+    },
 }
 
 
@@ -40,7 +50,10 @@ REST_KNOX = {
     # 这是更新令牌到期所需的最短时间（以秒为单位） 在数据库中。
     'MIN_REFRESH_INTERVAL':60,
     # 每个用户的令牌限制
-    'TOKEN_LIMIT_PER_USER': None,
+    'TOKEN_LIMIT_PER_USER': 10,
+    # 令牌上限时是禁止还是删除之前的令牌(True 为删除 False 为禁止)
+    "TOKEN_LIMIT_PER_USER_IS_DELETED":True,
+    # 用户序列化器
     'USER_SERIALIZER': 'knox.serializers.UserSerializer',
 }
 

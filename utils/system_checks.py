@@ -19,4 +19,4 @@ def redis_connection_check(app_configs, **kwargs):
         return []
     except Exception as e:
         print("\033[31m连接失败,{}\033[0m".format(str(e)))
-        return [Error('Redis 连接失败： {}'.format(str(e)), id='ststem_checks.E001')]
+        return [Error('Redis 连接失败： {}'.format(str(e)), id='ststem_checks.redis_connection_check')]

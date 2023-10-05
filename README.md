@@ -43,6 +43,9 @@ python manage.py createsuperuser
 
 # 启动
 python manage.py runserver
+
+# admin
+# pbkdf2_sha256$600000$t6Q3ICldoEeO3qkgzxFugQ$FqbvYpNwfmQH0yQEXVq3MdiYQO9QtRUNJvXQ21dxuMI=
 ```
 
 ## 修改内容
@@ -57,3 +60,10 @@ python manage.py runserver
 3. 完成错误处理返回
 4. 通过`Django-Rest-Knox`完成认证，修改退出登入状态码为200
 5. 重写用户模型(user/models)
+
+## 更新记录
+
+- 2023-10-05 CY
+    1. 增加默认限流，处理限流信息
+    2. Token上限后默认采用删除最先过期的Token
+    3. 修改及重置密码后删除所有Token

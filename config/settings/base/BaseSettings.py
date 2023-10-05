@@ -2,8 +2,9 @@
 基础配置
 """
 from utils.system_checks import *
+
 SILENCED_SYSTEM_CHECKS = [
-    'ststem_checks.E001',
+    'ststem_checks.redis_connection_check',# redis连接检查
 ]
 
 INSTALLED_APPS = [
