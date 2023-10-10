@@ -17,11 +17,11 @@ class CommonSerializer(serializers.ModelSerializer):
 
     many = False
     many_exclude = [] # 多个时,需要排除的字段
-
-
-
+    
     def __init__(self, instance=None, data=empty, **kwargs):
         self.base = kwargs.pop('base',False)
+        self.base_fields = kwargs.pop('base_fields', self.base_fields)
+        self.base_exclude = kwargs.pop('base_fields', self.base_exclude)
         if isinstance(instance, list):
             self.many = True
         super().__init__(instance, data, **kwargs)
