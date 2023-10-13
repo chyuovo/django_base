@@ -12,10 +12,10 @@ def system_checks(app_configs, **kwargs):
     """
     print("=================================系统检查=================================")
     if os.environ.get('ENV', None):
-        print("\033[33m 1. 当前为生产环境\033[0m")
+        print("\033[33m 1. 当前环境：生产环境\033[0m")
         
     else:
-        print("\033[33m 1. 当前为开发环境\033[0m")
+        print("\033[33m 1. 当前环境：开发环境\033[0m")
     return []
 
 # @register()

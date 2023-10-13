@@ -6,11 +6,7 @@ from rest_framework import serializers
 from django.contrib.auth import authenticate
 from rest_framework.exceptions import ValidationError,AuthenticationFailed,ParseError
 from django.contrib.auth.hashers import make_password
-from utils.model_serializer import CommonSerializer
-from rest_framework.serializers import ListSerializer
-
-
-    
+from utils.model_serializer import CommonSerializer    
 
 class UserSerializers(CommonSerializer):
     """ 
@@ -27,7 +23,7 @@ class UserSerializers(CommonSerializer):
         validated_data["password"] = make_password(validated_data[User.USERNAME_FIELD])
         return super().create(validated_data)
 
-class BaseUserSerializers(serializers.ModelSerializer):
+class BaseUserSerializers(CommonSerializer):
     """ 
     用户序列化器
     """
@@ -53,7 +49,7 @@ class RegisterSerializers(serializers.ModelSerializer):
 
 class LoginSerializer(serializers.Serializer):
     """
-    登入序列化器
+    账户密码登入序列化器
     """
     password = serializers.CharField(required=True, style={"input_type": "password"})
 

@@ -6,7 +6,7 @@ import hashlib,os
 from django.conf import settings
 from django.core.validators import FileExtensionValidator
 from rest_framework.exceptions import ParseError,AuthenticationFailed
-
+from django.db import transaction
 
 
 class CommonViewSet(GenericViewSet):
@@ -55,12 +55,15 @@ class CommonViewSet(GenericViewSet):
 
 class DeleteModelMixin:
     """多删，post请求，参数为ids数组"""
+
+    @transaction.atomic
     @action(methods=['post'],detail=False,url_path="delete")
     def delete(self,request):
         ids = request.data.get("ids")
         if ids is None:
             raise ParseError("未提供ids")
-        self.queryset.filter(pk__in=ids).delete()
+        for i in self.queryset.filter(pk__in=ids):
+            self.perform_destroy(i)
         return Response()
 
 class SaveModelMixin:
@@ -87,7 +90,9 @@ class CommonViewSetModel(CommonViewSet,ModelViewSet,DeleteModelMixin,SaveModelMi
     `update()`,`partial_update()`, `destroy()`,
     `list()`,`delete()`,`save()`操作
     """
-    pass
+    def destroy(self, request, *args, **kwargs):
+        super().destroy(request, *args, **kwargs)
+        return Response()
 
 
 

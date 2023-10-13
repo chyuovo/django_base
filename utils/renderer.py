@@ -21,10 +21,12 @@ class CustomRenderer(JSONRenderer):
         else:
             msg = 'suc'
             err_code = 0
+        
         # 429 请求频繁 为data添加等待时间 
         if err_code == 429:
             pass
             # 匹配 data["detail"]的数字
             data['wait_seconds'] = int(re.findall(r'\d+', data["detail"])[0])
+        
         ret={'data':data,'code':err_code,'msg':msg}
         return super().render(ret, accepted_media_type, renderer_context)
