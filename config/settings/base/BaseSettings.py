@@ -15,7 +15,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders', # 跨域
-    'django_apscheduler',# 定时任务
+    # 'django_apscheduler',# 定时任务
     'rest_framework',  # restful框架
     'django_filters', # 过滤器
     'logger', # 日志
@@ -42,6 +42,7 @@ LANGUAGE_CODE = 'zh-Hans'
 TIME_ZONE = 'Asia/Shanghai'
 USE_TZ =False
 
-# 设置用户模型
-AUTH_USER_MODEL = "user.User"
 
+AUTH_USER_MODEL = "user.User" # 设置用户模型
+
+IF_PERMISSION = True # 是否开启权限控制

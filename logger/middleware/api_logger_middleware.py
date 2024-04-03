@@ -44,9 +44,11 @@ class APILoggerMiddleware:
 
             # 跳过url名称            
             if url_name in self.DRF_API_LOGGER_SKIP_URL_NAME:
-                print("url_name：",url_name,"该接口不记录")
+                if settings.DEBUG:
+                    print("url_name：",url_name,"该接口不记录")
                 return self.get_response(request)
-            print("url_name：",url_name)
+            if settings.DEBUG:
+                print("url_name：",url_name)
             
             # 使用命名空间跳过整个应用
             if namespace in self.DRF_API_LOGGER_SKIP_NAMESPACE:
@@ -58,7 +60,8 @@ class APILoggerMiddleware:
                 request_data = json.loads(request.body) if request.body else ''
             except:
                 pass
-
+            if settings.DEBUG:
+                print("请求体：",request_data)
             #之前每个请求要执行的代码
             #调用视图(以及之后的中间件)。
             response = self.get_response(request)

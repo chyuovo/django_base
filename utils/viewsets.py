@@ -26,6 +26,10 @@ class CommonViewSet(GenericViewSet):
     
     def initial(self, request, *args, **kwargs):
         """重新定义此方法，添加灵活配置权限映射"""
+        if not settings.IF_PERMISSION:
+            print("注意：权限验证已关闭")
+            self.permission_classes = []
+            return super(GenericViewSet, self).initial(request, *args, **kwargs)
         handler_name = self.action
         if handler_name and handler_name in self.classes_map:
             if isinstance(self.classes_map.get(handler_name).get('permissions'), (tuple, list)):

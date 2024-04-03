@@ -1,4 +1,5 @@
 DEBUG = False
+IF_PERMISSION = True # 是否开启权限控制
 ALLOWED_HOSTS = ["*"]# 白名单
 
 # 文件保存设置

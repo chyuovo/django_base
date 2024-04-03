@@ -1,13 +1,13 @@
 from .serializers import APILogsSerializers
 from .models import APILogsModel
 from rest_framework import viewsets
-from rest_framework import permissions
+from utils import permissions
 from django.conf import settings
 class LogsViewSet(viewsets.ReadOnlyModelViewSet):
     """获取日志列表的视图函数"""
     queryset = APILogsModel.objects.all()
     serializer_class = APILogsSerializers
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsSuperuserUser]
 
 #  日志清理
 from datetime import datetime, date, timedelta

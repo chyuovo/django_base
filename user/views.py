@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import status,mixins
-from rest_framework import permissions
+from utils import permissions
 from rest_framework.response import Response
 from rest_framework.generics import  GenericAPIView
 from rest_framework.exceptions import AuthenticationFailed,ParseError
@@ -99,7 +99,7 @@ class AdminUserView(CommonViewSet,mixins.ListModelMixin,mixins.RetrieveModelMixi
 
     queryset = User.objects.all()
     serializer_class = UserSerializers
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsSuperuserUser]
     filterset_class  = UserFilter
 
     @action(methods=['put'],detail=True,url_path="reset_password")

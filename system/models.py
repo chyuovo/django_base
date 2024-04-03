@@ -17,7 +17,7 @@ class SystemConfig(models.Model):
         ("SERVICE_MONITORING_AGREEMENT", '服务监督协议'),
     )
     config_name = models.CharField(max_length=64,choices=CONFIG_TYPE, verbose_name='配置名称')
-    config_value = models.CharField(max_length=64, verbose_name='配置值')
+    config_value = models.TextField(verbose_name='配置值')
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     is_use = models.BooleanField(default=True, verbose_name='是否启用')
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="操作用户", help_text="操作用户")

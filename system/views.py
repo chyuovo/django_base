@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import status,mixins
-from rest_framework import permissions
+from utils import permissions
 from rest_framework.response import Response
 from rest_framework.generics import  GenericAPIView
 from rest_framework.exceptions import AuthenticationFailed,ParseError
@@ -34,7 +34,7 @@ class SystemConfigView(CommonViewSetModel,UploadFile):
     }
     queryset = SystemConfig.objects.all().order_by('-id')
     serializer_class = SystemConfigSerializers
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsSuperuserUser]
     paper_file = "system/config"
     
     @action(methods=['get'],detail=False)

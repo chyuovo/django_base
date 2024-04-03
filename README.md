@@ -43,8 +43,8 @@ python manage.py createsuperuser
 
 # 启动
 python manage.py runserver
-
-# admin
+python manage.py runserver 192.168.3.3:8000
+# 密码为admin的加密结果
 # pbkdf2_sha256$600000$t6Q3ICldoEeO3qkgzxFugQ$FqbvYpNwfmQH0yQEXVq3MdiYQO9QtRUNJvXQ21dxuMI=
 ```
 
@@ -63,7 +63,16 @@ python manage.py runserver
 
 ## 更新记录
 
-- 2023-10-05 CY
+- 等待更新
+    1. views分成多文件
+    2. 工具类中增加常用工具方法（身份证号码验证）
+    3. 用户分成管理员、员工、普通用户
+
+- 2023-10-05
     1. 增加默认限流，处理限流信息
     2. Token上限后默认采用删除最先过期的Token
     3. 修改及重置密码后删除所有Token
+
+- 2024-4-3
+    1. 增加权限工具文件
+    2. 在配置文件中添加是否进行权限验证（IF_PERMISSION）
